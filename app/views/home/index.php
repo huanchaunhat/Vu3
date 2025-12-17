@@ -100,7 +100,7 @@
                     </span>
                 <?php endif; ?>
 
-                <img src="<?= $imgPath ?>"
+                <img src="<?= $displayImg ?>"
                      alt="<?= htmlspecialchars($p['productname']) ?>"
                      class="product-image"
                      onerror="this.src='<?= BASE_URL ?>/assets/images/no-image.png'">
