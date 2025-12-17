@@ -58,9 +58,35 @@ class App
 
     protected function parseUrl()
     {
+        // 1. Ưu tiên lấy từ tham số ?url= (Dành cho Localhost/Apache cũ)
         if (isset($_GET['url'])) {
             return explode('/', filter_var(rtrim($_GET['url'], '/'), FILTER_SANITIZE_URL));
         }
-        return [];
+
+        // 2. Nếu không có $_GET['url'], tự phân tích đường dẫn thật (Dành cho Vercel)
+        $uri = $_SERVER['REQUEST_URI']; // Lấy full đường dẫn: /product/detail/1
+
+        // Xử lý Query String (nếu link có dạng /product?id=1 thì bỏ phần sau dấu ?)
+        if (strpos($uri, '?') !== false) {
+            $uri = explode('?', $uri)[0];
+        }
+
+        // Xử lý trường hợp chạy Localhost có thư mục con (ví dụ: /acen-center/public/product...)
+        // Nếu đường dẫn chứa chữ 'public/', ta chỉ lấy phần sau nó
+        if (strpos($uri, '/public/') !== false) {
+            $parts = explode('/public/', $uri);
+            $uri = end($parts); 
+        }
+
+        // Loại bỏ dấu / ở đầu và cuối
+        $uri = trim($uri, '/');
+
+        // Nếu đường dẫn rỗng -> Là trang chủ
+        if (empty($uri)) {
+            return [];
+        }
+
+        // Tách chuỗi thành mảng
+        return explode('/', filter_var($uri, FILTER_SANITIZE_URL));
     }
 }
